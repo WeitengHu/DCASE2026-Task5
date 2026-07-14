@@ -143,13 +143,13 @@ class QwenEmbeddingMatcher:
         from transformers import AutoModel, AutoTokenizer
 
         self.torch = torch
-        # self.device = torch.device(
-        #     os.environ.get(
-        #         "POSTPROCESS_EMBEDDING_DEVICE",
-        #         "cuda" if torch.cuda.is_available() else "cpu",
-        #     )
-        # )
-        self.device = torch.device("cpu")
+        self.device = torch.device(
+            os.environ.get(
+                "POSTPROCESS_EMBEDDING_DEVICE",
+                "cuda" if torch.cuda.is_available() else "cpu",
+            )
+        )
+        # self.device = torch.device("cpu")
         self.batch_size = int(os.environ.get("POSTPROCESS_EMBEDDING_BATCH_SIZE", "8"))
         self.max_length = int(os.environ.get("POSTPROCESS_EMBEDDING_MAX_LENGTH", "8192"))
         self.tokenizer = AutoTokenizer.from_pretrained(str(embedding_model_path), padding_side="left")
