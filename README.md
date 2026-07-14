@@ -1,5 +1,7 @@
 # Reasoning-Oriented Post-Training and Inference-Time LoRA Rescaling for Audio-Dependent Question Answering
 
+[![Hugging Face Dataset](https://img.shields.io/badge/Hugging%20Face-DCASE2026--Task5--Training--Jsonl-yellow.svg)](https://huggingface.co/datasets/huweiteng/DCASE2026-Task5-Training-Jsonl)
+
 Official code release for our DCASE 2026 Workshop paper:
 
 > **Reasoning-Oriented Post-Training and Inference-Time LoRA Rescaling for Audio-Dependent Question Answering**
@@ -32,9 +34,11 @@ The official resources are:
 - [DCASE2026-Task5-DevSet](https://huggingface.co/datasets/Harland/DCASE2026-Task5-DevSet)
 - [ADQA-Bench evaluation set](https://huggingface.co/datasets/Harland/ADQA-Bench)
 
+The pipeline-ready training JSONL files produced for this project are released separately at [huweiteng/DCASE2026-Task5-Training-Jsonl](https://huggingface.co/datasets/huweiteng/DCASE2026-Task5-Training-Jsonl). This is a project-specific derived dataset and is not an official DCASE 2026 Task 5 resource.
+
 The official training set contains 19,480 strongly audio-dependent questions with Gemini-generated Chain-of-Thought annotations. This repository uses those annotations to construct answer-only, free-form CoT, and structured-CoT supervision.
 
-The pipeline-ready datasets are not currently distributed with this repository. See [Data Preparation](#data-preparation) for the required conversions and replace every `path/to/...` placeholder before running the scripts.
+The pipeline-ready training annotations are distributed separately on Hugging Face. They do not include the audio files. See [Data Preparation](#data-preparation) before running any training script, and replace every `path/to/...` placeholder in the launchers.
 
 ## Qwen-CoT
 
@@ -193,23 +197,38 @@ Download or otherwise make available:
 ## Data Preparation
 
 > [!IMPORTANT]
-> Ready-to-use training and evaluation files are not included in the current release. Download the official DCASE 2026 Task 5 datasets listed above and convert them locally before running any training or evaluation pipeline.
+> The released JSONL files contain annotations only and do **not** include the audio. Download the original audio separately from [Harland/AudioMCQ-StrongAC-GeminiCoT](https://huggingface.co/datasets/Harland/AudioMCQ-StrongAC-GeminiCoT), then replace every JSONL audio path with the corresponding absolute path on your machine before training.
 
-The pipelines share the same official source data, but require different JSONL representations because their prompts, supervision targets, and reward inputs are different. Prepare the file referenced by each launcher as follows:
+1. Download the pipeline-ready annotations from [huweiteng/DCASE2026-Task5-Training-Jsonl](https://huggingface.co/datasets/huweiteng/DCASE2026-Task5-Training-Jsonl).
+2. Download the original audio from [Harland/AudioMCQ-StrongAC-GeminiCoT](https://huggingface.co/datasets/Harland/AudioMCQ-StrongAC-GeminiCoT).
+3. Replace the relative audio prefix in every JSONL file with the absolute path to the downloaded audio directory.
 
-| Pipeline | Script placeholder | Required representation |
+For example, change:
+
+```text
+AudioMCQ-StrongAC-GeminiCoT/AudioCaps/9HUZjSJnUAA_30.wav
+```
+
+to a real local path such as:
+
+```text
+/absolute/path/to/AudioMCQ-StrongAC-GeminiCoT/AudioCaps/9HUZjSJnUAA_30.wav
+```
+
+For Qwen files, update the paths in the `audios` list. For MOSS-Audio files, update the `content` field of each `conversation` entry whose `message_type` is `audio`. Only change the audio paths; keep all other fields unchanged. Verify that every resulting absolute path points to an existing audio file.
+
+The released files are organized as follows:
+
+| Pipeline | Released JSONL file(s) | Representation |
 | --- | --- | --- |
-| Qwen answer-only SFT | `path/to/qwen_answer_only_sft.jsonl` | ms-swift multimodal conversations with audio, question and choices, and an answer-only assistant target |
-| Qwen-CoT GRPO | `path/to/qwen_cot_grpo_data.jsonl` | ms-swift GRPO examples with the multimodal prompt and a reference `solution` containing the expected answer/CoT target |
-| Qwen structured-CoT SFT | `path/to/qwen_structured_cot_sft.jsonl` | ms-swift multimodal conversations whose assistant target follows the structured-CoT tags used by this repository |
-| Qwen structured-CoT GDPO | `path/to/qwen_structured_cot_gdpo.jsonl` | ms-swift GRPO examples with structured reference fields needed by the answer, question-type, similarity, and length rewards |
-| MOSS-Audio SFT | `path/to/train_data` and `path/to/eval_data` | MOSS-Audio native `conversation` JSONL, as illustrated below |
-| All evaluation configurations | `path/to/dataset.jsonl` or `path/to/dataset_jsonl` | The shared evaluation JSONL schema described below |
+| Qwen answer-only SFT | `qwen/train/qwen_cot_answer_only_sft.jsonl` | ms-swift multimodal conversations with an answer-only assistant target |
+| Qwen-CoT GRPO | `qwen/train/qwen_cot_grpo.jsonl` | ms-swift GRPO examples with the multimodal prompt and reference `solution` |
+| Qwen structured-CoT SFT | `qwen/train/qwen_structured_cot_sft.jsonl` | ms-swift multimodal conversations with structured-CoT assistant targets |
+| Qwen structured-CoT GDPO | `qwen/train/qwen_structured_cot_gdpo.jsonl` | ms-swift GRPO examples with the structured reference fields used by the rewards |
+| MOSS-Audio Full SFT | `moss-audio/train/moss_full_sft_train.jsonl` and `moss-audio/eval/moss_full_sft_eval.jsonl` | MOSS-Audio native `conversation` JSONL with full reasoning targets |
+| MOSS-Audio Label SFT | `moss-audio/train/moss_label_sft_train.jsonl` and `moss-audio/eval/moss_label_sft_eval.jsonl` | MOSS-Audio native `conversation` JSONL with label targets |
 
-Keep the original audio files available locally and ensure every converted item points to the correct audio file. The conversion code is not included in this release.
-
-> [!NOTE]
-> We plan to release the converted, pipeline-ready datasets on Hugging Face in a future update. Until that release is available, users must download the official data and perform these conversions themselves.
+The official development and evaluation datasets remain separate downloads.
 
 ### Evaluation JSONL
 
