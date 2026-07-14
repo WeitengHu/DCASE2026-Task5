@@ -13,6 +13,8 @@ git clone --recurse-submodules git@github.com:WeitengHu/DCASE2026-Task5.git
 cd DCASE2026-Task5
 ```
 
+Both the main repository and the MOSS-Audio submodule use SSH URLs. Configure a GitHub SSH key before cloning.
+
 If the repository was cloned without `--recurse-submodules`, initialize the dependency before using the MOSS pipeline:
 
 ```bash
@@ -176,7 +178,7 @@ pip install --extra-index-url https://download.pytorch.org/whl/cu128 -e "./third
 pip install librosa peft
 ```
 
-The official [OpenMOSS/MOSS-Audio](https://github.com/OpenMOSS/MOSS-Audio) repository is included as a Git submodule at `third_party/MOSS-Audio/`. This keeps the upstream implementation separate from the Task 5 code while pinning the exact source revision used by the launchers.
+The official [OpenMOSS/MOSS-Audio](https://github.com/OpenMOSS/MOSS-Audio) repository is included as an SSH Git submodule at `third_party/MOSS-Audio/`. This keeps the upstream implementation separate from the Task 5 code while pinning the exact source revision used by the launchers.
 
 If you cannot initialize the submodule, you can git clone from the official repository and put it into the third_party dictionary.
 
