@@ -2,10 +2,6 @@
 
 [![Hugging Face Dataset](https://img.shields.io/badge/Hugging%20Face-DCASE2026--Task5--Training--Jsonl-yellow.svg)](https://huggingface.co/datasets/huweiteng/DCASE2026-Task5-Training-Jsonl)
 
-Official code release for our DCASE 2026 Workshop paper:
-
-> **Reasoning-Oriented Post-Training and Inference-Time LoRA Rescaling for Audio-Dependent Question Answering**
-
 This repository contains the task-specific training, reward, inference, post-processing, and evaluation code used to study Audio-Dependent Question Answering (ADQA) for [DCASE 2026 Challenge Task 5](https://dcase.community/challenge2026/task-audio-dependent-question-answering). The experiments cover two Qwen2.5-Omni post-training pipelines and MOSS-Audio-8B-Thinking systems.
 
 Clone this repository together with its pinned MOSS-Audio dependency:
